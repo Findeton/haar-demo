@@ -1,7 +1,7 @@
 import numpy as np
 import math
  
-def haar_basis(level, n):
+def haar_basis_slow(level, n):
     base = 1/2**0.5
     V = []
     W = []
@@ -15,8 +15,8 @@ def haar_basis(level, n):
          V.append([0, 0] * exp * i + [basen, basen] * exp  + [0, 0] * exp * (loopN - i - 1))
     return np.matrix(V).getT(), np.matrix(W).getT()
    
-def haar_level(f, level):
-    V, W = haar_basis(level, f.shape[1])
+def haar_level_slow(f, level):
+    V, W = haar_basis_slow(level, f.shape[1])
     '''print("----\nlevel " + str(level) + "\n")
     print(V)
     print(W)
@@ -25,27 +25,52 @@ def haar_level(f, level):
     dn = (f * W) * W.getT()
     return an, dn
 
-def haar(f):
+def haar_slow(f):
     n = int(math.log(f.shape[1], 2))
     #print(n)
     A = np.matrix(f[:2**(n-1)])
     #print(A)
     res = []
     for i in range(1,n+1):
-        A, D = haar_level(A, i)
+        A, D = haar_level_slow(A, i)
         res.append(D)
     res.append(A)
     return res
     
 '''
 data = np.matrix([4,6,10,12,8,6,5,5])
-A1, D1 = haar_level (data, 1)
+A1, D1 = haar_level_slow (data, 1)
 print(A1)
 print(D1)
 
-A2, D2 = haar_level (A1, 2)
+A2, D2 = haar_level_slow (A1, 2)
 print(A2)
 print(D2)
-res = haar(data)
+res = haar_slow(data)
 print(res)
 '''
+
+def haar_level(f):
+    base = 1 / 2**0.5
+    n = len(f) // 2
+    g = [base*j for j in f]
+    A = [g[2*i] + g[2*i+1] for i in range(0, n)]
+    D = [g[2*i] - g[2*i+1] for i in range(0, n)]
+    return A, D
+    
+
+def haar(f):
+    n = int(math.log(len(f), 2))
+    A = f[:2**(n)]
+    res = []
+    while True:
+        A, D = haar_level(A)
+        res.append(D)
+        if len(D) == 1:
+            res.append(A)
+            break
+    return res
+
+data = [4,6,10,12,8,6,5,5]
+res = haar(data)
+print(res)
