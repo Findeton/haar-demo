@@ -53,9 +53,8 @@ print(res)
 def haar_level(f):
     base = 1 / 2**0.5
     n = len(f) // 2
-    g = [base*j for j in f]
-    A = [g[2*i] + g[2*i+1] for i in range(0, n)]
-    D = [g[2*i] - g[2*i+1] for i in range(0, n)]
+    A = [base*(f[2*i] + f[2*i+1]) for i in range(0, n)]
+    D = [base*(f[2*i] - f[2*i+1]) for i in range(0, n)]
     return A, D
     
 
@@ -69,8 +68,53 @@ def haar(f):
         if len(D) == 1:
             res.append(A)
             break
+    res.reverse()
     return res
 
+def inverse_haar_level(a, d):
+    res = []
+    base = 1 / 2**0.5
+    for i in range(0, len(a)):
+        res.append(base*(a[i] + d[i]))
+        res.append(base*(a[i] - d[i]))
+    return res
+
+
+def inverse_haar(h):
+    an = h[0]
+    for i in range(1, len(h)):
+        an = inverse_haar_level(an, h[i])
+    return an
+
 data = [4,6,10,12,8,6,5,5]
+print(data)
 res = haar(data)
 print(res)
+print(inverse_haar(res))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
