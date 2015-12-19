@@ -1,0 +1,6 @@
+[package]
+name = "haar-demo"
+version = "0.1.0"
+authors = ["findeton"]
+
+[dependencies]
